@@ -72,22 +72,22 @@ npx vercel --prod
 ## CI/CD configuration
 
 GitHub Actions runs four required checks on pull requests and pushes to
-`master`: lint, type-check, production build, and a high-severity dependency
+`main`: lint, type-check, production build, and a high-severity dependency
 audit. Every job uses `npm ci`, so `package-lock.json` must be committed and
 kept current.
 
 Configure the repository and hosting project as follows:
 
 1. In Vercel, import the GitHub repository and keep the production branch set
-   to `master`. Vercel's Git integration creates a preview deployment for each
-   pull request and a production deployment after changes reach `master`.
+   to `main`. Vercel's Git integration creates a preview deployment for each
+   pull request and a production deployment after changes reach `main`.
 2. Leave deployment credentials out of GitHub Actions. The Vercel GitHub App
    should be granted access only to this repository, and project members
    should receive only the Vercel roles they need.
 3. In Vercel, enable deployment protection for the production environment and
    restrict production deployments to the production branch. Require CI to
    pass before merging so failed commits cannot reach that branch.
-4. In GitHub branch protection for `master`, require the `Lint`, `Type check`,
+4. In GitHub branch protection for `main`, require the `Lint`, `Type check`,
    `Production build`, and `Dependency audit` checks and require pull requests
    before merging.
 5. In GitHub's security settings, enable the dependency graph, Dependabot
