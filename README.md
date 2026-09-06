@@ -3,6 +3,8 @@
 A responsive React app for discovering hackathon projects and forming teams.
 The current milestone is an accessible, responsive UI backed by local mock data.
 
+> **Testing Netlify Preview Deployment** - This change will trigger a preview build!
+
 UI component conventions, mock-data shapes, and preview states are documented
 in [`docs/UI.md`](docs/UI.md).
 
