@@ -65,3 +65,54 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm audit --audit-level=high
+
+  deploy-preview:
+    name: Deploy preview to Netlify
+    if: github.event_name == 'pull_request'
+    needs: [lint, type-check, build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Deploy to Netlify
+        run: |
+          npx netlify deploy \
+            --site=${{ vars.NETLIFY_SITE_ID }} \
+            --auth=${{ secrets.NETLIFY_AUTH_TOKEN }} \
+            --dir=dist \
+            --message="Preview deploy for PR #${{ github.event.pull_request.number }}"
+        env:
+          NETLIFY_SITE_ID: ${{ vars.NETLIFY_SITE_ID }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+
+  deploy-production:
+    name: Deploy production to Netlify
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [lint, type-check, build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Deploy to Netlify
+        run: |
+          npx netlify deploy \
+            --site=${{ vars.NETLIFY_SITE_ID }} \
+            --auth=${{ secrets.NETLIFY_AUTH_TOKEN }} \
+            --dir=dist \
+            --prod \
+            --message="Production deploy: ${{ github.sha }}"
+        env:
+          NETLIFY_SITE_ID: ${{ vars.NETLIFY_SITE_ID }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}

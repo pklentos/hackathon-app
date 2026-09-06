@@ -19,10 +19,10 @@ Work through these items in order. Keep each pull request small, independently t
 - [x] Add a CI workflow that installs dependencies from the lockfile.
 - [x] Add lint, type-check, and production-build jobs to CI.
 - [x] Make CI run on pull requests and the default branch.
-- [ ] Configure automatic preview deployments for pull requests.
-- [ ] Configure production deployment from the default branch.
+- [x] Configure automatic preview deployments for pull requests.
+- [x] Configure production deployment from the default branch.
 - [x] Document required CI and hosting configuration without recording secret values.
-- [ ] Security check: use least-privilege deployment credentials and protect the production environment.
+- [x] Security check: use least-privilege deployment credentials and protect the production environment.
 - [ ] Security check: enable dependency update alerts.
 - [x] Security check: add a dependency audit to CI.
 
@@ -87,38 +87,38 @@ Work through these items in order. Keep each pull request small, independently t
 
 ### 4.1 Project configuration
 
-- [ ] Create separate Supabase projects or environments for local/development and production.
-- [ ] Add only the public Supabase URL and anonymous key to `.env.example`.
-- [ ] Add a typed Supabase client module.
-- [ ] Add a safe missing-configuration error state.
-- [ ] Verify no service-role key is imported into client code.
-- [ ] Document local Supabase setup, environment variables, and migration commands.
-- [ ] Security check: confirm logs, errors, analytics, and URLs cannot expose participant tokens.
+- [x] Create separate Supabase projects or environments for local/development and production.
+- [x] Add only the public Supabase URL and anonymous key to `.env.example`.
+- [x] Add a typed Supabase client module.
+- [x] Add a safe missing-configuration error state.
+- [x] Verify no service-role key is imported into client code.
+- [x] Document local Supabase setup, environment variables, and migration commands.
+- [x] Security check: confirm logs, errors, analytics, and URLs cannot expose participant tokens.
 
 ### 4.2 Database schema
 
-- [ ] Add a migration for the `participants` table.
-- [ ] Add a migration for the `projects` table.
-- [ ] Add a migration for the `memberships` table.
-- [ ] Add primary keys, foreign keys, timestamps, and cascade behavior.
-- [ ] Add a unique constraint on `memberships.participant_id`.
-- [ ] Add database checks for display-name, title, description, and capacity limits.
-- [ ] Add indexes needed for project ordering, memberships, and creator lookups.
-- [ ] Derive participant counts from membership rows rather than storing editable counts.
-- [ ] Add a small organizer-seeded project migration or seed script.
-- [ ] Document the schema, constraints, seed process, and rollback procedure.
-- [ ] Security check: enable Row Level Security on every exposed table before connecting the UI.
+- [x] Add a migration for the `participants` table.
+- [x] Add a migration for the `projects` table.
+- [x] Add a migration for the `memberships` table.
+- [x] Add primary keys, foreign keys, timestamps, and cascade behavior.
+- [x] Add a unique constraint on `memberships.participant_id`.
+- [x] Add database checks for display-name, title, description, and capacity limits.
+- [x] Add indexes needed for project ordering, memberships, and creator lookups.
+- [x] Derive participant counts from membership rows rather than storing editable counts.
+- [x] Add a small organizer-seeded project migration or seed script.
+- [x] Document the schema, constraints, seed process, and rollback procedure.
+- [x] Security check: enable Row Level Security on every exposed table before connecting the UI.
 
 ### 4.3 Read-only catalog
 
-- [ ] Add a safe read policy or read-only database view for active project catalog data.
-- [ ] Include derived participant count and open/full status in the query result.
-- [ ] Replace mocked catalog data with Supabase project data.
-- [ ] Wire loading, empty, error, and retry states to the real query.
-- [ ] Preserve the required default ordering.
-- [ ] Keep search and filters client-side initially and verify them with real data.
-- [ ] Document the read query and data mapping.
-- [ ] Security check: ensure reads never return token hashes or other identity secrets.
+- [x] Add a safe read policy or read-only database view for active project catalog data.
+- [x] Include derived participant count and open/full status in the query result.
+- [x] Replace mocked catalog data with Supabase project data.
+- [x] Wire loading, empty, error, and retry states to the real query.
+- [x] Preserve the required default ordering.
+- [x] Keep search and filters client-side initially and verify them with real data.
+- [x] Document the read query and data mapping.
+- [x] Security check: ensure reads never return token hashes or other identity secrets.
 
 ## 5. Browser-scoped participant identity
 

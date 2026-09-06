@@ -10,6 +10,8 @@ import {
   Project,
   ProjectFilter,
 } from './mockData'
+import { fetchCatalogProjects } from './catalogData'
+import { isSupabaseConfigured } from './supabase'
 
 type DialogState =
   | { kind: 'details'; project: Project }
@@ -87,12 +89,13 @@ function ProjectCard({
 export function App() {
   const [query, setQuery] = useState('')
   const [filter, setFilter] = useState<ProjectFilter>('all')
-  const [catalogState] = useState<CatalogState>(() => {
+  const [catalogState, setCatalogState] = useState<CatalogState>(() => {
     const requested = new URLSearchParams(window.location.search).get('state')
     return requested === 'loading' || requested === 'empty' || requested === 'error'
       ? requested
-      : 'ready'
+      : isSupabaseConfigured() ? 'loading' : 'ready'
   })
+  const [projects, setProjects] = useState<Project[]>(mockProjects)
   const [dialog, setDialog] = useState<DialogState>(null)
   const dialogRef = useRef<HTMLElement>(null)
   const [displayName, setDisplayName] = useState(currentParticipant.displayName)
@@ -104,7 +107,45 @@ export function App() {
   const [projectSubmitError, setProjectSubmitError] = useState('')
   const [feedback, setFeedback] = useState('')
 
-  const currentProject = mockProjects.find(isCurrentProject)
+  // Fetch projects from Supabase on mount
+  useEffect(() => {
+    let isMounted = true
+
+    async function loadProjects() {
+      try {
+        setCatalogState('loading')
+        const fetchedProjects = await fetchCatalogProjects()
+        
+        if (!isMounted) return
+
+        if (fetchedProjects.length === 0) {
+          setCatalogState('empty')
+          setProjects([])
+        } else {
+          setCatalogState('ready')
+          setProjects(fetchedProjects)
+        }
+      } catch (error) {
+        console.error('Failed to load projects:', error)
+        if (isMounted) {
+          setCatalogState('error')
+          // Fallback to mock data on error
+          setProjects(mockProjects)
+        }
+      }
+    }
+
+    // Only fetch if Supabase is configured
+    if (isSupabaseConfigured()) {
+      loadProjects()
+    }
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
+  const currentProject = projects.find(isCurrentProject)
   useEffect(() => {
     if (!dialog) return
     dialogRef.current?.focus()
@@ -117,7 +158,7 @@ export function App() {
 
   const visibleProjects = useMemo(() => {
     const search = query.trim().toLocaleLowerCase()
-    return mockProjects
+    return projects
       .filter((project) => {
         const matchesQuery =
           !search ||
@@ -134,7 +175,7 @@ export function App() {
         const availability = Number(isProjectFull(a)) - Number(isProjectFull(b))
         return availability || Date.parse(b.createdAt) - Date.parse(a.createdAt)
       })
-  }, [filter, query])
+  }, [filter, query, projects])
 
   function resetCatalog() {
     setQuery('')

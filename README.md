@@ -10,6 +10,7 @@ in [`docs/UI.md`](docs/UI.md).
 
 - Node.js 20.19+ or 22.12+
 - npm 10+
+- Docker Desktop or Podman (for local Supabase development)
 
 ## Installation
 
@@ -21,6 +22,85 @@ Copy `.env.example` to `.env.local` only when local configuration is needed.
 Never commit `.env` files. Variables prefixed with `VITE_` are included in the
 browser bundle, so they must not contain credentials or service-role keys.
 
+## Supabase setup
+
+The app integrates with Supabase for project data storage. If Supabase is not
+configured, the app gracefully falls back to local mock data.
+
+### Local Supabase development
+
+1. Ensure Docker Desktop or Podman is installed and running.
+2. Start the local Supabase instance:
+
+```sh
+npx supabase start
+```
+
+This command downloads required Docker images and starts PostgreSQL, Kong,
+GoTrue, PostgREST, Realtime, Storage, and other Supabase services. The output
+includes the local API URL and anonymous key.
+
+3. Copy the printed `API URL` and `anon key` to `.env.local`:
+
+```sh
+VITE_SUPABASE_URL=http://127.0.0.1:54321
+VITE_SUPABASE_ANON_KEY=your-anon-key-here
+```
+
+**Security note**: Only use the anonymous (anon) key in client code. Never use
+the service-role key, as it bypasses Row Level Security and grants full
+database access.
+
+4. The database schema is defined in `supabase/migrations/`. Migrations are
+   automatically applied when you start Supabase locally.
+
+### Supabase commands
+
+```sh
+# Start local Supabase (applies migrations automatically)
+npx supabase start
+
+# Stop local Supabase
+npx supabase stop
+
+# Reset database and reapply all migrations
+npx supabase db reset
+
+# Create a new migration
+npx supabase migration new migration_name
+
+# Check Supabase status
+npx supabase status
+```
+
+### Database schema
+
+The database includes three main tables:
+
+- **participants**: Browser-scoped participant identities with hashed tokens
+- **projects**: Hackathon projects with title, description, capacity, and creator
+- **memberships**: One-to-one relationship between participants and projects
+
+All tables have Row Level Security (RLS) enabled. Direct writes are prevented;
+mutations must go through authenticated server functions (to be implemented in
+later milestones).
+
+The `project_catalog` view provides computed fields (member_count, status) for
+efficient catalog queries.
+
+### Production Supabase
+
+For production deployment:
+
+1. Create a Supabase project at https://supabase.com
+2. Apply migrations to production:
+   ```sh
+   npx supabase link --project-ref your-project-ref
+   npx supabase db push
+   ```
+3. Add the production URL and anon key to Vercel environment variables
+4. Never expose the service-role key in any client-accessible location
+
 ## Local development
 
 ```sh
@@ -28,6 +108,8 @@ npm run dev
 ```
 
 Vite prints the local URL, normally `http://localhost:5173`.
+
+If Supabase is not running or configured, the app uses mock data automatically.
 
 Other checks:
 
@@ -47,27 +129,33 @@ The production assets are written to `dist/`.
 
 ## Deployment
 
-The repository includes `vercel.json` for Vercel hosting.
+This project is deployed to Netlify using CLI-driven deployments via GitHub Actions.
 
-1. Import this repository into Vercel.
-2. Keep the detected Vite framework settings. The configured build command is
-   `npm run build`, and the output directory is `dist`.
-3. Add only non-secret public configuration if the app later requires it.
-4. Deploy, then update the URL below.
+### Automated Deployments
 
-Temporary deployment:
-https://temporary-sonic-sequoia-8p923zf.vercel.app
+- **Preview deployments**: Automatically created for every pull request (after CI checks pass)
+- **Production deployments**: Automatically deployed when changes are merged to `main`
 
-The temporary deployment expires one hour after creation. Claim it in Vercel
-and run an authenticated production deployment to obtain a persistent URL.
+### Manual Local Deployment
 
-For an anonymous preview or an authenticated production deployment:
+1. Authenticate with Netlify:
+   ```sh
+   npx netlify login
+   ```
 
-```sh
-npx vercel deploy --temporary --yes
-npx vercel
-npx vercel --prod
-```
+2. Deploy a preview:
+   ```sh
+   npm run build
+   npx netlify deploy
+   ```
+
+3. Deploy to production:
+   ```sh
+   npm run build
+   npx netlify deploy --prod
+   ```
+
+For complete deployment documentation, environment variables, troubleshooting, and CI/CD flow, see [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
 
 ## CI/CD configuration
 
@@ -76,26 +164,32 @@ GitHub Actions runs four required checks on pull requests and pushes to
 audit. Every job uses `npm ci`, so `package-lock.json` must be committed and
 kept current.
 
-Configure the repository and hosting project as follows:
+After all checks pass:
+- **Pull requests**: A preview deployment is created on Netlify
+- **Main branch**: A production deployment is triggered on Netlify
 
-1. In Vercel, import the GitHub repository and keep the production branch set
-   to `main`. Vercel's Git integration creates a preview deployment for each
-   pull request and a production deployment after changes reach `main`.
-2. Leave deployment credentials out of GitHub Actions. The Vercel GitHub App
-   should be granted access only to this repository, and project members
-   should receive only the Vercel roles they need.
-3. In Vercel, enable deployment protection for the production environment and
-   restrict production deployments to the production branch. Require CI to
-   pass before merging so failed commits cannot reach that branch.
-4. In GitHub branch protection for `main`, require the `Lint`, `Type check`,
-   `Production build`, and `Dependency audit` checks and require pull requests
-   before merging.
-5. In GitHub's security settings, enable the dependency graph, Dependabot
-   alerts, and Dependabot security updates. `.github/dependabot.yml` also
-   schedules weekly npm and GitHub Actions version-update pull requests.
+### Required GitHub Configuration
 
-No repository secrets are required by the current workflows. If deployment is
-later moved from the Vercel Git integration into GitHub Actions, store the
-token as an environment secret, scope it to this Vercel project where
-supported, and require approval on a protected `production` environment.
-Never put token values in documentation, workflow files, or `VITE_` variables.
+1. **Repository secrets**:
+   - `NETLIFY_AUTH_TOKEN`: Netlify personal access token
+
+2. **Repository variables**:
+   - `NETLIFY_SITE_ID`: Netlify site identifier
+
+3. **Branch protection for `main`**:
+   - Require pull requests before merging
+   - Require status checks to pass: `Lint`, `Type check`, `Production build`, `Dependency audit`
+   - Require branches to be up to date before merging
+
+4. **Security settings**:
+   - Enable dependency graph
+   - Enable Dependabot alerts
+   - Enable Dependabot security updates
+   - `.github/dependabot.yml` schedules weekly npm and GitHub Actions version-update PRs
+
+### Security Notes
+
+- The `NETLIFY_AUTH_TOKEN` secret provides deployment access and must be protected
+- Use least-privilege credentials (site-specific tokens when available)
+- Never put token values in documentation, workflow files, or `VITE_` variables
+- All `VITE_` prefixed environment variables are included in the browser bundle
