@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+
+# Production output
+dist/
+
+# Local environment files (keep the documented example)
+.env
+.env.*
+!.env.example
+
+# Local tooling and operating-system files
+*.local
+*.log
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+.vercel

@@ -4,83 +4,84 @@ Work through these items in order. Keep each pull request small, independently t
 
 ## 1. Project initialization and “Hello World”
 
-- [ ] Initialize a React + TypeScript + Vite project with strict TypeScript settings.
-- [ ] Add a single responsive page that renders “Hello World”.
-- [ ] Add standard scripts for development, build, preview, lint, and type-check.
-- [ ] Add `.gitignore` and `.env.example`; ensure `.env` files and secrets are ignored.
-- [ ] Add a minimal README with prerequisites, installation, local development, and build commands.
-- [ ] Run the app locally and verify the production build succeeds.
+- [x] Initialize a React + TypeScript + Vite project with strict TypeScript settings.
+- [x] Add a single responsive page that renders “Hello World”.
+- [x] Add standard scripts for development, build, preview, lint, and type-check.
+- [x] Add `.gitignore` and `.env.example`; ensure `.env` files and secrets are ignored.
+- [x] Add a minimal README with prerequisites, installation, local development, and build commands.
+- [x] Run the app locally and verify the production build succeeds.
 - [ ] Configure a hosting project and deploy the Hello World build.
-- [ ] Record the deployment URL and deployment procedure in the README.
-- [ ] Security check: confirm the browser bundle and repository contain no credentials or service-role keys.
+- [x] Record the deployment URL and deployment procedure in the README.
+- [x] Security check: confirm the browser bundle and repository contain no credentials or service-role keys.
 
 ## 2. CI/CD foundation
 
-- [ ] Add a CI workflow that installs dependencies from the lockfile.
-- [ ] Add lint, type-check, and production-build jobs to CI.
-- [ ] Make CI run on pull requests and the default branch.
+- [x] Add a CI workflow that installs dependencies from the lockfile.
+- [x] Add lint, type-check, and production-build jobs to CI.
+- [x] Make CI run on pull requests and the default branch.
 - [ ] Configure automatic preview deployments for pull requests.
 - [ ] Configure production deployment from the default branch.
-- [ ] Document required CI and hosting configuration without recording secret values.
+- [x] Document required CI and hosting configuration without recording secret values.
 - [ ] Security check: use least-privilege deployment credentials and protect the production environment.
-- [ ] Security check: enable dependency update alerts and add a dependency audit to CI.
+- [ ] Security check: enable dependency update alerts.
+- [x] Security check: add a dependency audit to CI.
 
 ## 3. Basic UI with mocked data
 
 ### 3.1 App shell
 
-- [ ] Add a semantic page shell with header, main content, and app title.
-- [ ] Add a mocked current-participant name and current-project summary.
-- [ ] Add navigation actions for browsing projects and proposing a project.
-- [ ] Add responsive base styles for widths down to 320 px.
-- [ ] Add visible keyboard focus styles and a skip-to-content link.
-- [ ] Document the component and styling conventions.
-- [ ] Security check: render all mocked/user-facing strings as text, never raw HTML.
+- [x] Add a semantic page shell with header, main content, and app title.
+- [x] Add a mocked current-participant name and current-project summary.
+- [x] Add navigation actions for browsing projects and proposing a project.
+- [x] Add responsive base styles for widths down to 320 px.
+- [x] Add visible keyboard focus styles and a skip-to-content link.
+- [x] Document the component and styling conventions.
+- [x] Security check: render all mocked/user-facing strings as text, never raw HTML.
 
 ### 3.2 Mock project model and catalog
 
-- [ ] Define strict TypeScript types for participant, project, and membership view data.
-- [ ] Create local mock data containing open, full, joined, created, and organizer-seeded projects.
-- [ ] Build one project card showing title, truncated description, count, capacity, and status.
-- [ ] Add current-project and creator indicators to the card.
-- [ ] Render the full mocked catalog in a responsive card grid.
-- [ ] Sort mocked projects with open projects first, then newest first.
-- [ ] Add mocked loading, empty-catalog, and error states.
-- [ ] Document the mock-data shape and how to select each UI state.
-- [ ] Security check: avoid placing realistic personal data or tokens in fixtures.
+- [x] Define strict TypeScript types for participant, project, and membership view data.
+- [x] Create local mock data containing open, full, joined, created, and organizer-seeded projects.
+- [x] Build one project card showing title, truncated description, count, capacity, and status.
+- [x] Add current-project and creator indicators to the card.
+- [x] Render the full mocked catalog in a responsive card grid.
+- [x] Sort mocked projects with open projects first, then newest first.
+- [x] Add mocked loading, empty-catalog, and error states.
+- [x] Document the mock-data shape and how to select each UI state.
+- [x] Security check: avoid placing realistic personal data or tokens in fixtures.
 
 ### 3.3 Search and filters
 
-- [ ] Add case-insensitive search across mocked project titles and descriptions.
-- [ ] Add mutually exclusive Open, Full, and My project filters.
-- [ ] Make search and status filters compose correctly.
-- [ ] Add a reset control for search and filters.
-- [ ] Add a distinct no-results state.
-- [ ] Verify filtering updates without a page refresh.
-- [ ] Document catalog query behavior and default ordering.
-- [ ] Security check: treat search text as data and never interpolate it into HTML or executable expressions.
+- [x] Add case-insensitive search across mocked project titles and descriptions.
+- [x] Add mutually exclusive Open, Full, and My project filters.
+- [x] Make search and status filters compose correctly.
+- [x] Add a reset control for search and filters.
+- [x] Add a distinct no-results state.
+- [x] Verify filtering updates without a page refresh.
+- [x] Document catalog query behavior and default ordering.
+- [x] Security check: treat search text as data and never interpolate it into HTML or executable expressions.
 
 ### 3.4 Mock project details
 
-- [ ] Add a project detail view opened from a card.
-- [ ] Show the full description, count, capacity, status, creator, creation time, and participant names.
-- [ ] Add mocked Join, Switch, Leave, Edit, and Delete controls in the appropriate states.
-- [ ] Ensure the detail view is keyboard accessible and works at 320 px.
-- [ ] Document the detail-view states.
-- [ ] Security check: do not infer authorization from hidden controls; mark them as UI-only until backend enforcement exists.
+- [x] Add a project detail view opened from a card.
+- [x] Show the full description, count, capacity, status, creator, creation time, and participant names.
+- [x] Add mocked Join, Switch, Leave, Edit, and Delete controls in the appropriate states.
+- [x] Ensure the detail view is keyboard accessible and works at 320 px.
+- [x] Document the detail-view states.
+- [x] Security check: do not infer authorization from hidden controls; mark them as UI-only until backend enforcement exists.
 
 ### 3.5 Mock forms and confirmations
 
-- [ ] Add a display-name entry form with trim and 1–40 character validation.
-- [ ] Add a project form with title, description, and team-capacity fields.
-- [ ] Add inline validation for all PRD limits.
-- [ ] Preserve entered values after a mocked recoverable error.
-- [ ] Add confirmation dialogs for switch, leave, and delete actions.
-- [ ] Include the affected participant count in delete confirmation.
-- [ ] Add success and error feedback that does not rely only on color.
-- [ ] Add the browser-scoped identity and public-display-name privacy notices.
-- [ ] Document every form rule and confirmation flow.
-- [ ] Security check: validate mocked inputs with the same constraints planned for the server.
+- [x] Add a display-name entry form with trim and 1–40 character validation.
+- [x] Add a project form with title, description, and team-capacity fields.
+- [x] Add inline validation for all PRD limits.
+- [x] Preserve entered values after a mocked recoverable error.
+- [x] Add confirmation dialogs for switch, leave, and delete actions.
+- [x] Include the affected participant count in delete confirmation.
+- [x] Add success and error feedback that does not rely only on color.
+- [x] Add the browser-scoped identity and public-display-name privacy notices.
+- [x] Document every form rule and confirmation flow.
+- [x] Security check: validate mocked inputs with the same constraints planned for the server.
 
 ## 4. Supabase foundation
 
